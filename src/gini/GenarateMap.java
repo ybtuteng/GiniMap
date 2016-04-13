@@ -34,20 +34,20 @@ public class GenarateMap {
 
             XYSeries xyseries = new XYSeries(dataName1);
             XYSeries xyseries1 = new XYSeries(dataName2);
-            XYSeriesCollection xyseriescollection = new XYSeriesCollection();//����??
+            XYSeriesCollection xyseriescollection = new XYSeriesCollection();//数据??
 
 
             double count = 0;
 
-            //data2��ʵ�ʵ��ߣ�data1���������
-            for (int i = 0; i < data.length; i++) {//��ʾ��ͼƬ��data.length��
+            //data2是实际的线，data1是理想的线
+            for (int i = 0; i < data.length; i++) {//表示该图片有data.length行
                 String tempData = "" + data[i];
-                //count = GiniCompute.getXAxis(total,i);//ʵ���ߵ�ĺ�����ֵ
-                xyseries1.add(count, Double.parseDouble(tempData));//��Ӹõ�
+                //count = GiniCompute.getXAxis(total,i);//实际线点的横坐标值
+                xyseries1.add(count, Double.parseDouble(tempData));//添加该点
                 count++;
                 }
 
-           //�����ߣ�����ֻ�������㣬һ����0.0�� һ����total.100��
+           //理想线，上面只有两个点，一个（0.0） 一个（total.100）
             String data11 = "" + ideal[0];
             xyseries.add(0, Double.parseDouble(data11));
             String data12 = "" + ideal[1];
@@ -56,14 +56,14 @@ public class GenarateMap {
             xyseriescollection.addSeries(xyseries);
             xyseriescollection.addSeries(xyseries1);
 
-            JFreeChart chart = createChart(xyseriescollection, title, xtitle, ytitle); // ���⣬x�����,y�����
+            JFreeChart chart = createChart(xyseriescollection, title, xtitle, ytitle); // 标题，x轴标题,y轴标题
 
-            chart.setBackgroundPaint(Color.white); // ���ñ���??
-            chart.setBorderVisible(false); // ���ò���??
+            chart.setBackgroundPaint(Color.white); // 设置背景??
+            chart.setBorderVisible(false); // 设置不边??
             XYPlot plot = (XYPlot) chart.getPlot();
 
-            //saveChartAsJPEG����ʾ����Ϊjpeg��ʽ��ͼ
-            ChartUtilities.saveChartAsJPEG(new File(filePath), chart, 600, 600);//500X500�ı��
+            //saveChartAsJPEG：表示保存为jpeg格式的图
+            ChartUtilities.saveChartAsJPEG(new File(filePath), chart, 600, 600);//500X500的表格
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,13 +80,13 @@ public class GenarateMap {
         xylineandshaperenderer.setSeriesStroke(1, new BasicStroke(2.0F, 1, 1, 1.0F, null, 0.0F));
         xylineandshaperenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
 
-        xylineandshaperenderer.setItemLabelFont(new Font("����", Font.TRUETYPE_FONT, 24));// ��������
+        xylineandshaperenderer.setItemLabelFont(new Font("黑体", Font.TRUETYPE_FONT, 24));// 设置字体
 
-        //���ùյ㲻�ɼ�
+        //设置拐点不可见
         xylineandshaperenderer.setBaseShapesVisible(false);
         xyplot.setRenderer(xylineandshaperenderer);
 
-        //����y��̶�
+        //设置y轴刻度
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis .setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         numberaxis .setLowerBound(0);
@@ -98,32 +98,32 @@ public class GenarateMap {
 
         GenarateMap jcm = new GenarateMap();
 
-        //��giniϵ��������λС��
+        //让gini系数保留两位小数
         DecimalFormat doubleDigit= new DecimalFormat("######0.00");
         String giniString;
         giniString = doubleDigit.format(gini);
         String title = "The Sum:" + GiniCompute.getSum() + "      The Gini Index:" + giniString;
 
-        String xtitle = "Positions/trait";// X���
-        String ytitle = "Sum/%";// Y���
-        String dataName1 = "Ideal";//��ɫ�����ݴ���ĺ���
-        String dataName2 = "Realistic";//��ɫ�����ݴ���ĺ���
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//�������ڸ�ʽ
+        String xtitle = "Positions/trait";// X轴标
+        String ytitle = "Sum/%";// Y轴标
+        String dataName1 = "Ideal";//红色线数据代表的含义
+        String dataName2 = "Realistic";//蓝色线数据代表的含义
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
         String time;
         time = df.format(new Date());
-        String filePath = "C:/Users/ybtut/IdeaProjects/GiniMap/image/" + time +".jpeg";
+        String filePath = "C:/Users/ybtut/IdeaProjects/test/image/" + time +".jpeg";
 
         jcm.createQXT(title, dataName1, dataName2, xtitle, ytitle, filePath,data,ideal,total);
-        System.out.println("	------生成图片" + filePath + "------");
+        System.out.println("	------生成图片完成" + filePath + "------");
 
-        //������ϴ򿪸ո����ɵ�ͼƬ
+        //在面板上打开刚刚生成的图片
         final JFrame frame = new JFrame();
-        ImageIcon mypic = new ImageIcon("C:/Users/ybtut/IdeaProjects/GiniMap/image/"+ time +".jpeg");
+        ImageIcon mypic = new ImageIcon("C:/Users/ybtut/IdeaProjects/test/image/"+ time +".jpeg");
 
         frame.setTitle("The Gini Map");
         frame.setContentPane(new ImagePanel(mypic.getImage()));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setBounds(100, 100, mypic.getIconWidth() + 16, mypic.getIconHeight() + 39);//��Ϊ��ȡ�ĳ���������ʾ����ͼƬ����˽���ʾ�������16����ʾ��������39
+        frame.setBounds(100, 100, mypic.getIconWidth() + 16, mypic.getIconHeight() + 39);//因为获取的长宽不足以显示整个图片，因此将显示宽度增加16，显示长度增加39
         frame.setVisible(true);
 
         new Thread(new Runnable() {
